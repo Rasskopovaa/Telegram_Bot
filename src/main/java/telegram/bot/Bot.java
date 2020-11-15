@@ -1,6 +1,5 @@
 package telegram.bot;
 
-
 import com.vdurmont.emoji.EmojiParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,10 @@ import java.util.List;
 @Component
 public class Bot  extends TelegramLongPollingBot {
     private static final Logger logger = LoggerFactory.getLogger(Bot.class);
-    String strErr="Введена неверная команда.Пожалуйста, выберите действие.";
+    final String STRERR = "Введена неверная команда.Пожалуйста, выберите действие.";
+    final String CLOUD = EmojiParser.parseToUnicode(":cloud:");
+    final String DIZZY = EmojiParser.parseToUnicode(":dizzy:");
+    final String BULB = EmojiParser.parseToUnicode(":bulb:");
 
     @Value("${bot.name}")
     private String botUsername;
@@ -43,45 +45,36 @@ public class Bot  extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        /*try {
-            execute(new SendMessage().setChatId(update.getMessage().getChatId())
-                    .setText("Hi!"));
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }
-    */
         if (update.hasMessage()) {
-            Message message = update.getMessage();
-            SendMessage response = new SendMessage();
-            Long chatId = message.getChatId();
-            response.setChatId(chatId);
-            String text = message.getText();
-            setButtons(response);
+            final Message MESSAGE = update.getMessage();
+            final SendMessage RESPONSE = new SendMessage();
+            final Long CHATId = MESSAGE.getChatId();
+            RESPONSE.setChatId(CHATId);
+            final String TEXT = MESSAGE.getText();
+            setButtons(RESPONSE);
 
             try{
-            if(text.equals("Аффирмация")){
+                if (TEXT.contains("Аффирмация")) {
                 Afirmations afirmations = new Afirmations();
-                response.setText(afirmations.getAfirmation());
+                    RESPONSE.setText(DIZZY + afirmations.getAfirmation());
             }
-            if(text.equals("Погода")){
+                if (TEXT.equals("Погода")) {
                 Weather weather = new Weather();
-                response.setText(weather.getWeather());
+                    RESPONSE.setText(CLOUD + weather.getWeather());
             }
-            if(text.equals("Факт")){
+                if (TEXT.equals("Факт")) {
                 Facts facts = new Facts();
-                response.setText(facts.getFact());
+                    RESPONSE.setText(BULB + facts.getFact());
             }
-           if(text.equals("/start" )){
-               response.setText(text);
+                if (TEXT.equals("/start")) {
+                    RESPONSE.setText(TEXT);
+           } else if (!TEXT.equals("Факт") && !TEXT.equals("Погода") && !TEXT.equals("Аффирмация")) {
+                    RESPONSE.setText(STRERR);
            }
-           else if (!text.equals("Факт") && !text.equals("Погода")&& !text.equals("Аффирмация")){
-               response.setText(strErr);
-           }
-                execute(response);
-                logger.info("Sent message \"{}\" to {}", text, chatId);
+                execute(RESPONSE);
+                logger.info("Sent message \"{}\" to {}", TEXT, CHATId);
             } catch (TelegramApiException e) {
-                logger.error("Failed to send message \"{}\" to {} due to error: {}", text, chatId, e.getMessage());
+                logger.error("Failed to send message \"{}\" to {} due to error: {}", TEXT, CHATId, e.getMessage());
 
             }
             catch (IOException ex){
