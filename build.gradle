@@ -19,6 +19,8 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.3.0.RELEASE'
     compile group: 'org.telegram', name: 'telegrambots-spring-boot-starter', version: '4.7'
     compile group: 'org.telegram', name: 'telegrambots', version: '4.8'
+    compile group: 'com.vdurmont', name: 'emoji-java', version: '4.0.0'
+
 
 
 
